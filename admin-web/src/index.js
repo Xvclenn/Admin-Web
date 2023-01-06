@@ -8,15 +8,15 @@ import { Body } from "./components/body";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <div className="NAV">
-      <Header />
-    </div>
-    <div className="Bodd">
-      <Body />
-    </div>
-    <App />
-  </React.StrictMode>
+    <React.StrictMode>
+        <div className="NAV">
+            <Header />
+        </div>
+        <div className="Bodd">
+            <Body />
+        </div>
+        <App />
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
