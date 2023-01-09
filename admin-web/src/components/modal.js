@@ -2,7 +2,6 @@ import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import React, { useState } from "react";
 import "../components/style.css";
 
 export function BodyModal({
@@ -12,7 +11,6 @@ export function BodyModal({
     addTodo,
     text,
     error,
-    closeOrNew,
 }) {
     return (
         <Modal show={show} onHide={handleClose}>
@@ -29,6 +27,7 @@ export function BodyModal({
                     >
                         <Form.Label>Нэр:</Form.Label>
                         <Form.Control
+                            className="shake"
                             value={text}
                             onChange={handleTextChange}
                             type="name"
@@ -48,13 +47,7 @@ export function BodyModal({
                 >
                     Устгах
                 </Button>
-                <Button
-                    variant="primary"
-                    onClick={function () {
-                        addTodo();
-                        closeOrNew();
-                    }}
-                >
+                <Button variant="primary" onClick={addTodo}>
                     Хадгалах
                 </Button>
             </Modal.Footer>

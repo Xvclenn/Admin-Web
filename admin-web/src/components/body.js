@@ -1,10 +1,10 @@
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Modal from "react-bootstrap/Modal";
-import Form from "react-bootstrap/Form";
 import React, { useState } from "react";
 import { BodyModal } from "./modal";
+import Form from "react-bootstrap/Form";
+import { v4 as uuidv4 } from "uuid";
 
 // const categories = [
 //     { id: "1", name: "Улс Төр" },
@@ -26,7 +26,13 @@ export function Body() {
         if (text === "") {
             setError("Утга оруулна уу!!!");
         } else {
-            const newTodos = [text, ...todos];
+            const newTodo = {
+                text: text,
+                done: false,
+                id: uuidv4(),
+            };
+            handleClose();
+            const newTodos = [newTodo, ...todos];
             setTodos(newTodos);
             setText("");
             setError("");
@@ -41,15 +47,24 @@ export function Body() {
         }
     }
 
+    function handleDoneChange(id) {
+        const newTodos = [...todos];
+
+        let index;
+
+        for (let i = 0; i < todos.length; i++) {
+            if (id === todos[i].id) {
+                index = i;
+                break;
+            }
+        }
+
+        newTodos[index].done = !newTodos[index].done;
+        setTodos(newTodos);
+    }
+
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
-    function closeOrNew() {
-        if (text === "") {
-        } else {
-            handleClose();
-        }
-    }
 
     return (
         <Container className="d-flex flex-column align-items-center">
@@ -65,13 +80,16 @@ export function Body() {
             </div>
 
             {todos.map((todo, index) => (
-                <React.Fragment key={index}>
+                <React.Fragment key={todo.id}>
                     <div className="card w-50">
                         <div className="card-body d-flex align-items-center">
-                            {todo}
+                            {todo.text}
                             <Button className="btn-warning ms-auto d-flex">
                                 Засах
                             </Button>
+                            <Form.Check
+                                onChange={() => handleDoneChange(todo.id)}
+                            />
                             <Button
                                 className="btn-danger ms-2 d-flex  "
                                 onClick={() => handleDelete(index)}
@@ -92,7 +110,7 @@ export function Body() {
                 text={text}
                 setError={setError}
                 error={error}
-                closeOrNew={closeOrNew}
+                // closeOrNew={closeOrNew}
             />
         </Container>
     );
