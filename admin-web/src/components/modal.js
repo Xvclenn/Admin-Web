@@ -4,6 +4,10 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import "../components/style.css";
 
+// const style = {
+//     animation: error && !text ? "horizontal-shaking 0.35s" : "none",
+// };
+
 export function BodyModal({
     show,
     handleClose,
@@ -11,7 +15,12 @@ export function BodyModal({
     addTodo,
     text,
     error,
+    handleKeyUp,
 }) {
+    const style = {
+        animation: error && !text ? "horizontal-shaking 0.35s" : "none",
+        borderColor: error && !text ? "red" : "#ced4da",
+    };
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
@@ -20,25 +29,22 @@ export function BodyModal({
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form>
-                    <Form.Group
-                        className="mb-3"
-                        controlId="exampleForm.ControlInput1"
-                    >
-                        <Form.Label>Нэр:</Form.Label>
-                        <Form.Control
-                            className="shake"
-                            value={text}
-                            onChange={handleTextChange}
-                            type="name"
-                            placeholder="Ангилалын Нэр"
-                            autoFocus
-                            style={{
-                                borderColor: error && !text ? "red" : "#ced4da",
-                            }}
-                        />
-                    </Form.Group>
-                </Form>
+                <Form.Group
+                    className="mb-3"
+                    controlId="exampleForm.ControlInput1"
+                >
+                    <Form.Label>Нэр:</Form.Label>
+                    <Form.Control
+                        className="horizontal-shake"
+                        value={text}
+                        onChange={handleTextChange}
+                        onKeyUp={handleKeyUp}
+                        type="name"
+                        placeholder="Ангилалын Нэр"
+                        autoFocus
+                        style={style}
+                    />
+                </Form.Group>
             </Modal.Body>
             <Modal.Footer className="modal-footer justify-content-between">
                 <Button

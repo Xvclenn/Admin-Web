@@ -3,9 +3,8 @@ import Container from "react-bootstrap/Container";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useState } from "react";
 import { BodyModal } from "./modal";
-import Form from "react-bootstrap/Form";
 import { v4 as uuidv4 } from "uuid";
-
+import Form from "react-bootstrap/Form";
 // const categories = [
 //     { id: "1", name: "Улс Төр" },
 //     { id: "2", name: "Спорт" },
@@ -17,6 +16,8 @@ export function Body() {
     const [text, setText] = useState("");
     const [todos, setTodos] = useState([]);
     const [error, setError] = useState("");
+    const [editing, setEditing] = useState();
+    const [editingTexts, setEditingTexts] = useState({});
 
     function handleTextChange(event) {
         setText(event.target.value);
@@ -26,14 +27,21 @@ export function Body() {
         if (text === "") {
             setError("Утга оруулна уу!!!");
         } else {
-            const newTodo = {
-                text: text,
-                done: false,
-                id: uuidv4(),
-            };
+            if (editing === undefined) {
+                const newTodo = {
+                    text: text,
+                    done: false,
+                    id: uuidv4(),
+                };
+                const newTodos = [newTodo, ...todos];
+                setTodos(newTodos);
+            } else {
+                const newTodos = [...todos];
+                newTodos[editing].text = text;
+                setTodos(newTodos);
+                setEditing(undefined);
+            }
             handleClose();
-            const newTodos = [newTodo, ...todos];
-            setTodos(newTodos);
             setText("");
             setError("");
         }
@@ -63,6 +71,38 @@ export function Body() {
         setTodos(newTodos);
     }
 
+    function editTodInline(id, index) {
+        const newEditingTexts = { ...editingTexts };
+        newEditingTexts[id] = todos[index].text;
+        setEditingTexts(newEditingTexts);
+    }
+
+    function handleEditingText(id, event) {
+        const newEditingTexts = { ...editingTexts };
+        newEditingTexts[id] = event.target.value;
+        setEditingTexts(newEditingTexts);
+    }
+
+    function cancelEditing(id) {
+        const newEditingTexts = { ...editingTexts };
+        newEditingTexts[id] = undefined;
+        setEditingTexts(newEditingTexts);
+    }
+
+    function updateEditingText(index, id) {
+        const newTodos = [...todos];
+        newTodos[index].text = editingTexts[id];
+        setTodos(newTodos);
+
+        cancelEditing(id);
+    }
+
+    function handleKeyUp(event) {
+        if (event.code === "Enter") {
+            addTodo();
+        }
+    }
+
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
@@ -80,22 +120,102 @@ export function Body() {
             </div>
 
             {todos.map((todo, index) => (
-                <React.Fragment key={todo.id}>
-                    <div className="card w-50">
-                        <div className="card-body d-flex align-items-center">
-                            {todo.text}
-                            <Button className="btn-warning ms-auto d-flex">
-                                Засах
-                            </Button>
-                            <Form.Check
-                                onChange={() => handleDoneChange(todo.id)}
-                            />
-                            <Button
-                                className="btn-danger ms-2 d-flex  "
-                                onClick={() => handleDelete(index)}
-                            >
-                                Устгах
-                            </Button>
+                <React.Fragment
+                    key={todo.id}
+                    // style={{
+                    //     textDecoration: todo.done ? "line-through" : "none",
+                    // }}
+                >
+                    <div
+                        className="card w-50"
+                        style={{
+                            opacity: todo.done ? "50%" : "100%",
+                        }}
+                    >
+                        <div className="card-body d-flex align-items-center justify-content-between">
+                            {editingTexts[todo.id] !== undefined ? (
+                                <React.Fragment className="d-flex">
+                                    <Form.Control
+                                        value={editingTexts[todo.id]}
+                                        onChange={(event) =>
+                                            handleEditingText(todo.id, event)
+                                        }
+                                    />
+                                    {/* <input
+                                        style={editingInputStyle}
+                                        value={editingTexts[todo.id]}
+                                        onChange={(event) =>
+                                            handleEditingText(todo.id, event)
+                                        }
+                                    ></input> */}
+                                    <div className="d-flex">
+                                        <Button
+                                            className="btn-success d-flex"
+                                            onClick={() =>
+                                                updateEditingText(
+                                                    index,
+                                                    todo.id
+                                                )
+                                            }
+                                        >
+                                            Хадгалах
+                                        </Button>
+                                        <Button
+                                            className="btn-dark ms-2 d-flex"
+                                            onClick={() =>
+                                                cancelEditing(todo.id)
+                                            }
+                                        >
+                                            Болих
+                                        </Button>
+                                        <Button
+                                            className="btn-danger ms-2 d-flex  "
+                                            onClick={() => handleDelete(index)}
+                                        >
+                                            Устгах
+                                        </Button>
+                                    </div>
+                                </React.Fragment>
+                            ) : (
+                                <React.Fragment className="d-flex">
+                                    <div className="d-flex">
+                                        <input
+                                            type="checkbox"
+                                            onChange={(event) =>
+                                                handleDoneChange(todo.id, event)
+                                            }
+                                        />
+                                        <span
+                                            className="ms-3"
+                                            style={{
+                                                textDecoration: todo.done
+                                                    ? "line-through"
+                                                    : "none",
+                                            }}
+                                        >
+                                            {todo.text}
+                                        </span>
+                                    </div>
+                                    <div className="d-flex">
+                                        <Button
+                                            disabled={todo.done}
+                                            className="btn-warning d-flex"
+                                            onClick={() =>
+                                                editTodInline(todo.id, index)
+                                            }
+                                        >
+                                            Засах
+                                        </Button>
+                                        <Button
+                                            disabled={todo.done}
+                                            className="btn-danger ms-2 d-flex  "
+                                            onClick={() => handleDelete(index)}
+                                        >
+                                            Устгах
+                                        </Button>
+                                    </div>
+                                </React.Fragment>
+                            )}
                         </div>
                     </div>
                     <br />
@@ -110,6 +230,7 @@ export function Body() {
                 text={text}
                 setError={setError}
                 error={error}
+                handleKeyUp={handleKeyUp}
                 // closeOrNew={closeOrNew}
             />
         </Container>

@@ -3,18 +3,10 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { Header } from "./components/header";
-import { Body } from "./components/body";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <React.StrictMode>
-        <div className="NAV">
-            <Header />
-        </div>
-        <div className="Bodd">
-            <Body />
-        </div>
         <App />
     </React.StrictMode>
 );
